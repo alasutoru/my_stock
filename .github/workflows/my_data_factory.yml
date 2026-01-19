@@ -45,12 +45,14 @@ jobs:
           git add -f my_stock_data/*.json
           git add -f metadata.json
           
-          # 顯示狀態，確認 git 抓到了什麼
+          # 顯示狀態
           git status
           
           if git diff --staged --quiet; then
             echo "No changes detected."
           else
             git commit -m "📈 Auto-update stock data: $(date +'%Y-%m-%d')"
+            # 關鍵：先拉取遠端最新變更，再推送，避免衝突
+            git pull --rebase
             git push
           fi
