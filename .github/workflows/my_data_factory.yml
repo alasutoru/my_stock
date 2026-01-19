@@ -3,7 +3,7 @@ name: Personal Data Factory
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 14 * * *'  # 每天台灣時間約 22:30 自動跑
+    - cron: '0 10 * * *'  # 每天台灣時間 18:00 自動跑
 
 permissions:
   contents: write
