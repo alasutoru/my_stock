@@ -1,0 +1,40 @@
+name: Personal Data Factory
+
+on:
+  workflow_dispatch:  # 允許手動按按鈕觸發
+  schedule:
+    - cron: '30 14 * * *'  # 每天收盤後 (台灣時間約晚上 10:30) 自動跑
+
+jobs:
+  download-my-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Libraries
+        run: pip install yfinance pandas
+
+      - name: Create Watchlist (Demo)
+        # 如果你還沒上傳 watchlist.txt，這行會幫你建一個預設的
+        run: |
+          if [ ! -f watchlist.txt ]; then
+            echo "2330.TW" > watchlist.txt
+            echo "AAPL" >> watchlist.txt
+          fi
+
+      - name: Run Downloader
+        run: python my_downloader.py
+
+      - name: Upload Data Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: My-Stock-JSON
+          path: my_stock_data/*.json
+          retention-days: 7
