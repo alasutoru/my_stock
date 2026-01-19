@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的股票數據中心</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f7f9; color: #333; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 800px; width: 100%; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #1a73e8; text-align: center; }
+        .update-info { text-align: center; color: #666; font-size: 0.9em; margin-bottom: 30px; }
+        .stock-list { list-style: none; padding: 0; }
+        .stock-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; transition: background 0.2s; }
+        .stock-item:hover { background-color: #f9f9f9; }
+        .stock-info { display: flex; flex-direction: column; }
+        .stock-symbol { font-weight: bold; font-size: 1.1em; color: #202124; }
+        .btn-download { background-color: #1a73e8; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 0.9em; }
+        .btn-download:hover { background-color: #1765cc; }
+        footer { margin-top: 40px; color: #999; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 我的股票數據中心</h1>
+        <p class="update-info">由 GitHub Actions 自動維護，每天 22:30 更新數據</p>
+        
+        <ul class="stock-list" id="stockList">
+            <!-- 這裡由 JS 自動生成 -->
+            <p style="text-align: center;">正在讀取觀察名單...</p>
+        </ul>
+    </div>
+
+    <footer>
+        資料來源：Yahoo Finance (via yfinance)
+    </footer>
+
+    <script>
+        async function loadStocks() {
+            try {
+                const response = await fetch('watchlist.txt');
+                const text = await response.text();
+                const stocks = text.split('\n').map(s => s.trim()).filter(s => s !== "");
+                
+                const listContainer = document.getElementById('stockList');
+                listContainer.innerHTML = '';
+
+                stocks.forEach(symbol => {
+                    const li = document.createElement('li');
+                    li.className = 'stock-item';
+                    
+                    // 根據網址規則構建下載連結
+                    const downloadUrl = `my_stock_data/${symbol}.json`;
+                    
+                    li.innerHTML = "`
+                        <div class="stock-info">
+                            <span class="stock-symbol">${symbol}</span>
+                        </div>
+                        <a href="${downloadUrl}" download="${symbol}.json" class="btn-download">📥 下載 JSON</a>
+                    `";
+                    listContainer.appendChild(li);
+                });
+            } catch (e) {
+                document.getElementById('stockList').innerHTML = '<p style="color:red">無法讀取觀察名單，請確認專案根目錄有 watchlist.txt</p>';
+            }
+        }
+
+        loadStocks();
+    </script>
+</body>
+</html>

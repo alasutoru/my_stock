@@ -1,9 +1,12 @@
 name: Personal Data Factory
 
 on:
-  workflow_dispatch:  # 允許手動按按鈕觸發
+  workflow_dispatch:
   schedule:
-    - cron: '30 14 * * *'  # 每天收盤後 (台灣時間約晚上 10:30) 自動跑
+    - cron: '30 14 * * *'  # 每天台灣時間約 22:30 自動跑
+
+permissions:
+  contents: write
 
 jobs:
   download-my-data:
@@ -21,20 +24,19 @@ jobs:
       - name: Install Libraries
         run: pip install yfinance pandas
 
-      - name: Create Watchlist (Demo)
-        # 如果你還沒上傳 watchlist.txt，這行會幫你建一個預設的
-        run: |
-          if [ ! -f watchlist.txt ]; then
-            echo "2330.TW" > watchlist.txt
-            echo "AAPL" >> watchlist.txt
-          fi
-
       - name: Run Downloader
         run: python my_downloader.py
 
-      - name: Upload Data Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: My-Stock-JSON
-          path: my_stock_data/*.json
-          retention-days: 7
+      - name: Commit and Push Data
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          
+          git add my_stock_data/*.json
+          
+          if git diff --staged --quiet; then
+            echo "No changes detected."
+          else
+            git commit -m "📈 Auto-update stock data: $(date +'%Y-%m-%d')"
+            git push
+          fi
