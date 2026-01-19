@@ -17,16 +17,17 @@
         .btn-download { background-color: #1a73e8; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 0.9em; }
         .btn-download:hover { background-color: #1765cc; }
         footer { margin-top: 40px; color: #999; font-size: 0.8em; }
+        .error { color: #d93025; text-align: center; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📈 我的股票數據中心</h1>
-        <p class="update-info">由 GitHub Actions 自動維護，每天 22:30 更新數據</p>
+        <p class="update-info" id="updateTime">載入中...</p>
         
         <ul class="stock-list" id="stockList">
             <!-- 這裡由 JS 自動生成 -->
-            <p style="text-align: center;">正在讀取觀察名單...</p>
+            <p style="text-align: center;">正在讀取數據...</p>
         </ul>
     </div>
 
@@ -37,30 +38,37 @@
     <script>
         async function loadStocks() {
             try {
-                const response = await fetch('watchlist.txt');
-                const text = await response.text();
-                const stocks = text.split('\n').map(s => s.trim()).filter(s => s !== "");
+                // 改讀 metadata.json，這比讀 txt 更穩定
+                const response = await fetch('metadata.json?t=' + new Date().getTime()); // 加時間戳防止快取
+                if (!response.ok) throw new Error("Metadata not found");
+                
+                const data = await response.json();
+                
+                // 更新時間
+                document.getElementById('updateTime').innerText = `最後更新：${data.last_updated}`;
                 
                 const listContainer = document.getElementById('stockList');
                 listContainer.innerHTML = '';
 
-                stocks.forEach(symbol => {
+                data.stocks.forEach(symbol => {
                     const li = document.createElement('li');
                     li.className = 'stock-item';
                     
-                    // 根據網址規則構建下載連結
                     const downloadUrl = `my_stock_data/${symbol}.json`;
                     
-                    li.innerHTML = "`
+                    li.innerHTML = `
                         <div class="stock-info">
                             <span class="stock-symbol">${symbol}</span>
                         </div>
                         <a href="${downloadUrl}" download="${symbol}.json" class="btn-download">📥 下載 JSON</a>
-                    `";
+                    `;
                     listContainer.appendChild(li);
                 });
             } catch (e) {
-                document.getElementById('stockList').innerHTML = '<p style="color:red">無法讀取觀察名單，請確認專案根目錄有 watchlist.txt</p>';
+                console.error(e);
+                document.getElementById('stockList').innerHTML = 
+                    '<p class="error">⚠️ 無法讀取數據索引。<br>請確認 Actions 是否已成功執行完畢。</p>';
+                document.getElementById('updateTime').innerText = '狀態：尚未初始化';
             }
         }
 
