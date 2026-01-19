@@ -67,8 +67,8 @@
             } catch (e) {
                 console.error(e);
                 document.getElementById('stockList').innerHTML = 
-                    '<p class="error">⚠️ 無法讀取數據索引。<br>請確認 Actions 是否已成功執行完畢。</p>';
-                document.getElementById('updateTime').innerText = '狀態：尚未初始化';
+                    `<p class="error">⚠️ 無法讀取數據索引。<br>錯誤訊息：${e.message}<br>請確認 Actions 是否已成功執行完畢，且 GitHub Pages 已更新。</p>`;
+                document.getElementById('updateTime').innerText = '狀態：讀取失敗';
             }
         }
 
