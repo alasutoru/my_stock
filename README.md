@@ -1,17 +1,31 @@
 # 📈 my_stock: 個人化股市數據下載器
 
-這是一個輕量級的股市數據抓取與視覺化工具，專注於追蹤特定關注標的。
+![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=flat-square&logo=python&logoColor=white)
+![Data](https://img.shields.io/badge/Data-JSON-orange?style=flat-square)
+![Finance](https://img.shields.io/badge/Focus-Stock_Market-gold?style=flat-square)
+
+這是一個輕量級的股市數據抓取與靜態視覺化工具，專為需要長期追蹤特定標的的投資者設計。
 
 ## 🌟 主要特色
-- **自動化抓取**：使用 Python 腳本 `my_downloader.py` 定期抓取股市行情。
-- **關注清單管理**：透過 `watchlist.txt` 輕鬆增減追蹤標的（支援台股與美股）。
-- **數據緩存**：抓取的數據以 JSON 格式儲存於 `my_stock_data/`，方便離線分析。
-- **靜態展示**：內建 `index.html` 用於展示分析結果。
+- **跨市場支援**：同步追蹤台股 (TW) 與美股 (US) 熱門標的。
+- **數據持久化**：自動將行情轉為結構化 JSON 檔案，利於後續數據清洗與分析。
+- **極簡管理**：只需編輯 `watchlist.txt` 即可增減監控對象。
+- **快速概覽**：內建 `index.html` 可快速檢視最新的市場數據。
 
-## 📂 目錄結構
-- `my_downloader.py`: 資料抓取核心。
-- `watchlist.txt`: 股票清單。
-- `my_stock_data/`: JSON 數據存儲路徑。
+## 📂 專案組成
+```text
+.
+├── my_downloader.py    # Python 抓取核心
+├── watchlist.txt       # 關注名單 (如: 2330.TW, NVDA)
+├── my_stock_data/      # JSON 數據存儲庫
+└── index.html          # 數據展示頁面
+```
+
+## 🛠️ 執行說明
+確保已安裝 `yfinance` 等必要庫後執行：
+```bash
+python my_downloader.py
+```
 
 ---
-*精準追蹤，理性決策。*
+*數據驅動，冷靜佈局。*
